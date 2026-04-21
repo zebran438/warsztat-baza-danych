@@ -1,6 +1,7 @@
 **Temat:** Warsztat samochodowy  
 
-**Autorzy:** 
+**Autorzy:**  
+
 
 ---
 
@@ -27,6 +28,8 @@ Każdy klient może posiadać jeden lub wiele pojazdów. Każdy pojazd może mie
 
 Baza danych umożliwia odwzorowanie rzeczywistych procesów zachodzących w warsztacie oraz stanowi podstawę do dalszego rozwoju systemu informatycznego.
 
+System przechowuje również katalog usług (robocizny) wraz z ich cenami jednostkowymi. Przy każdym zleceniu rejestrowany jest przebieg pojazdu, a system automatycznie oblicza całkowity koszt naprawy jako sumę wykorzystanych części oraz wykonanych usług.
+
 ---
 
 # 2. Wymagania i funkcje systemu
@@ -41,7 +44,10 @@ Projektowana baza danych powinna umożliwiać:
 - przypisywanie pracowników do zleceń,
 - ewidencję części zamiennych,
 - odwzorowanie relacji między poszczególnymi encjami,
-- zapewnienie integralności danych poprzez zastosowanie kluczy głównych i obcych.
+- zapewnienie integralności danych poprzez zastosowanie kluczy głównych i obcych,
+- ewidencję świadczonych usług (np. wymiana oleju, diagnostyka),
+- rejestrowanie przebiegu pojazdu przy każdym zleceniu,
+- automatyczne sumowanie kosztów zlecenia (części + robocizna).
 
 ---
 
@@ -53,6 +59,8 @@ Projektowana baza danych powinna umożliwiać:
 4. Przypisanie pracownika do zlecenia  
 5. Dodanie informacji o wykorzystanych częściach  
 6. Aktualizacja statusu zlecenia  
+7. Dodanie wykonanej usługi (robocizny) do konkretnego zlecenia  
+8. Wygenerowanie raportu końcowego (podsumowanie kosztów) dla klienta  
 
 ---
 
@@ -63,6 +71,7 @@ Projektowana baza danych powinna umożliwiać:
 - Jako klient chcę zarejestrować swój pojazd w warsztacie, aby móc zlecić jego naprawę.  
 - Jako klient chcę otrzymać informację o statusie naprawy, aby wiedzieć, kiedy pojazd będzie gotowy.  
 - Jako klient chcę otrzymać informację o kosztach naprawy, aby podjąć decyzję o realizacji usługi.  
+- Jako klient chcę mieć wgląd w historię napraw mojego auta, aby wiedzieć, jakie części były wymieniane w przeszłości.  
 
 ---
 
@@ -87,3 +96,4 @@ Projektowana baza danych powinna umożliwiać:
 - Jako kierownik chcę mieć dostęp do wszystkich danych w bazie, aby zarządzać działalnością warsztatu.  
 - Jako kierownik chcę analizować zlecenia i ich koszty, aby kontrolować dochody i wydatki.  
 - Jako kierownik chcę zarządzać pracownikami, aby efektywnie organizować pracę warsztatu.  
+- Jako kierownik chcę widzieć raport zysków z podziałem na sprzedane części i wykonane usługi mechaników.   
