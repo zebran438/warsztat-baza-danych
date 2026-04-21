@@ -1,8 +1,6 @@
-# Temat: Warsztat samochodowy
+**Temat:** Warsztat samochodowy  
 
-## Autorzy
-- Twoje imię i nazwisko
-- Imię i nazwisko kolegi
+**Autorzy:** 
 
 ---
 
