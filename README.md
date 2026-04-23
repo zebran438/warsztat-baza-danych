@@ -1,7 +1,6 @@
 **Temat:** Warsztat samochodowy  
 
-**Autorzy:**  Raman Dzerban 
-Mykyta Petrov
+**Autorzy:**  Raman Dzerban, Mykyta Petrov
 
 
 ---
