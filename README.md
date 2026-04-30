@@ -169,7 +169,7 @@ Projektowana baza danych powinna umożliwiać:
 | id_pojazdu | INT | Klucz obcy → Pojazdy |
 | data_przyjecia | DATE | Data przyjęcia pojazdu |
 | data_zakonczenia | DATE | Data zakończenia naprawy |
-| status | VARCHAR(30) | Status zlecenia |
+| status | VARCHAR(30) | Status zlecenia (Oczekujace, W trakcie, Zakonczone), domyślnie: Oczekujace |
 | przebieg | INT | Przebieg pojazdu |
 | koszt_calkowity | DECIMAL(10,2) | Całkowity koszt naprawy |
 | opis | VARCHAR(255) | Opis usterki lub naprawy |
