@@ -98,13 +98,144 @@ Projektowana baza danych powinna umożliwiać:
 - Jako kierownik chcę zarządzać pracownikami, aby efektywnie organizować pracę warsztatu.  
 - Jako kierownik chcę widzieć raport zysków z podziałem na sprzedane części i wykonane usługi mechaników.
 
-#3. Projekt bazy danych
+# 3. Projekt bazy danych
 
 <img width="748" height="782" alt="image" src="https://github.com/user-attachments/assets/56968c47-a29c-4c94-9f4a-68db729044ab" />
 
+# Opis poszczególnych tabel
+
+---
+
+## Nazwa tabeli: Klienci
+
+- **Opis:** Tabela przechowuje dane klientów warsztatu.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_klienta | INT | Klucz główny, identyfikator klienta |
+| imie | VARCHAR(50) | Imię klienta |
+| nazwisko | VARCHAR(50) | Nazwisko klienta |
+| telefon | VARCHAR(15) | Numer telefonu |
+
+---
+
+## Nazwa tabeli: Klasy_Pojazdow
+
+- **Opis:** Tabela przechowuje klasy pojazdów oraz odpowiadające im mnożniki kosztów.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| nazwa | VARCHAR(20) | Klucz główny, nazwa klasy pojazdu |
+| mnoznik | DECIMAL(3,2) | Współczynnik wpływający na koszt naprawy |
+
+---
+
+## Nazwa tabeli: Pojazdy
+
+- **Opis:** Tabela przechowuje dane pojazdów klientów.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_pojazdu | INT | Klucz główny |
+| id_klienta | INT | Klucz obcy → Klienci |
+| marka | VARCHAR(50) | Marka pojazdu |
+| model | VARCHAR(50) | Model pojazdu |
+| nr_rejestracyjny | VARCHAR(20) | Unikalny numer rejestracyjny |
+| vin | VARCHAR(50) | Unikalny numer VIN |
+| klasa_pojazdu | VARCHAR(20) | Klucz obcy → Klasy_Pojazdow |
+
+---
+
+## Nazwa tabeli: Pracownicy
+
+- **Opis:** Tabela przechowuje dane pracowników warsztatu.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_pracownika | INT | Klucz główny |
+| imie | VARCHAR(50) | Imię pracownika |
+| nazwisko | VARCHAR(50) | Nazwisko pracownika |
+| stanowisko | VARCHAR(50) | Stanowisko |
+
+---
+
+## Nazwa tabeli: Zlecenia
+
+- **Opis:** Tabela przechowuje informacje o zleceniach naprawczych.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_zlecenia | INT | Klucz główny |
+| id_pojazdu | INT | Klucz obcy → Pojazdy |
+| data_przyjecia | DATE | Data przyjęcia pojazdu |
+| data_zakonczenia | DATE | Data zakończenia naprawy |
+| status | VARCHAR(30) | Status zlecenia |
+| przebieg | INT | Przebieg pojazdu |
+| koszt_calkowity | DECIMAL(10,2) | Całkowity koszt naprawy |
+| opis | VARCHAR(255) | Opis usterki lub naprawy |
+
+---
+
+## Nazwa tabeli: Czesci
+
+- **Opis:** Tabela przechowuje dane części zamiennych.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_czesci | INT | Klucz główny |
+| nazwa | VARCHAR(100) | Nazwa części |
+| cena | DECIMAL(10,2) | Cena jednostkowa |
+
+---
+
+## Nazwa tabeli: Uslugi
+
+- **Opis:** Tabela przechowuje dane usług (robocizny).
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_uslugi | INT | Klucz główny |
+| nazwa | VARCHAR(100) | Nazwa usługi |
+| cena_jednostkowa | DECIMAL(10,2) | Cena usługi |
+
+---
+
+## Nazwa tabeli: Zlecenia_Pracownicy
+
+- **Opis:** Tabela łącząca zlecenia z pracownikami (relacja wiele-do-wielu).
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_zlecenia | INT | Klucz obcy → Zlecenia |
+| id_pracownika | INT | Klucz obcy → Pracownicy |
+
+---
+
+## Nazwa tabeli: Zlecenia_Czesci
+
+- **Opis:** Tabela przechowuje informacje o częściach użytych w zleceniach.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_zlecenia | INT | Klucz obcy → Zlecenia |
+| id_czesci | INT | Klucz obcy → Czesci |
+| ilosc | INT | Ilość użytych części |
+
+---
+
+## Nazwa tabeli: Zlecenia_Uslugi
+
+- **Opis:** Tabela przechowuje informacje o usługach wykonanych w ramach zleceń.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---------------|-----|------------|
+| id_zlecenia | INT | Klucz obcy → Zlecenia |
+| id_uslugi | INT | Klucz obcy → Uslugi |
+| ilosc | INT | Ilość wykonanych usług |
 
 
-#4. Implementacja
+
+# 4. Implementacja
 
 
 ```sql
@@ -155,7 +286,10 @@ CREATE TABLE Zlecenia (
     id_pojazdu INT NOT NULL,
     data_przyjecia DATE NOT NULL,
     data_zakonczenia DATE,
-    status VARCHAR(30) DEFAULT 'Oczekujace',
+    status VARCHAR(30) 
+        CONSTRAINT chk_status 
+        CHECK (status IN ('Oczekujace', 'W trakcie', 'Zakonczone'))
+        DEFAULT 'Oczekujace',
     przebieg INT NOT NULL,
     koszt_calkowity DECIMAL(10,2),
     opis VARCHAR(255),
