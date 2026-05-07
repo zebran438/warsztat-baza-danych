@@ -547,4 +547,10 @@ INSERT INTO Zlecenia_Uslugi (
 VALUES
 (1, 1, 1),
 (2, 2, 1);
+
+SELECT dbo.fn_ObliczKosztCalkowity(1) AS koszt_1;
+SELECT dbo.fn_ObliczKosztCalkowity(2) AS koszt_2;
+
+SELECT id_zlecenia, koszt_calkowity
+FROM Zlecenia;
 ```
