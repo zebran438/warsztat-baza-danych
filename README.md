@@ -344,3 +344,36 @@ CREATE TABLE Zlecenia_Uslugi (
     FOREIGN KEY (id_uslugi) REFERENCES Uslugi(id_uslugi)
 );
 ```
+#Widoki
+
+```sql
+CREATE VIEW v_Pelny_Raport_Zlecenia AS
+SELECT 
+    z.id_zlecenia,
+    p.marka,
+    p.model,
+    p.nr_rejestracyjny,
+    z.data_przyjecia,
+    z.data_zakonczenia,
+    z.status,
+    z.przebieg,
+    z.koszt_calkowity
+FROM Zlecenia z
+JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu;
+
+--------------------------------------------------
+
+CREATE VIEW v_Pelny_Raport_Zlecenia AS
+SELECT 
+    z.id_zlecenia,
+    p.marka,
+    p.model,
+    p.nr_rejestracyjny,
+    z.data_przyjecia,
+    z.data_zakonczenia,
+    z.status,
+    z.przebieg,
+    z.koszt_calkowity
+FROM Zlecenia z
+JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu;
+```
