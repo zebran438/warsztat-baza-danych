@@ -344,7 +344,7 @@ CREATE TABLE Zlecenia_Uslugi (
     FOREIGN KEY (id_uslugi) REFERENCES Uslugi(id_uslugi)
 );
 ```
-#Widoki
+# Widoki
 
 ```sql
 CREATE VIEW v_Koszty_Uslug_Z_Mnoznikiem AS
@@ -378,4 +378,164 @@ SELECT
     z.koszt_calkowity
 FROM Zlecenia z
 JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu;
+```
+# Funkcja
+
+```sql
+CREATE FUNCTION dbo.fn_ObliczKosztCalkowity (@id_zlecenia INT)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    DECLARE @koszt_czesci DECIMAL(10,2) = 0;
+    DECLARE @koszt_uslug DECIMAL(10,2) = 0;
+    DECLARE @mnoznik DECIMAL(3,2) = 1.0;
+
+    SELECT @mnoznik = kp.mnoznik
+    FROM Zlecenia z
+    JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu
+    JOIN Klasy_Pojazdow kp ON p.klasa_pojazdu = kp.nazwa
+    WHERE z.id_zlecenia = @id_zlecenia;
+
+    SELECT @koszt_czesci = ISNULL(SUM(c.cena * zc.ilosc), 0)
+    FROM Zlecenia_Czesci zc
+    JOIN Czesci c ON zc.id_czesci = c.id_czesci
+    WHERE zc.id_zlecenia = @id_zlecenia;
+
+    SELECT @koszt_uslug = ISNULL(SUM(u.cena_jednostkowa * zu.ilosc * @mnoznik), 0)
+    FROM Zlecenia_Uslugi zu
+    JOIN Uslugi u ON zu.id_uslugi = u.id_uslugi
+    WHERE zu.id_zlecenia = @id_zlecenia;
+
+    RETURN @koszt_czesci + @koszt_uslug;
+END;
+```
+# Tiggery
+
+```sql
+CREATE TRIGGER trg_AktualizujKosztZlecenia_Uslugi
+ON Zlecenia_Uslugi
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE z
+    SET koszt_calkowity = dbo.fn_ObliczKosztCalkowity(z.id_zlecenia)
+    FROM Zlecenia z
+    WHERE z.id_zlecenia IN (
+        SELECT id_zlecenia FROM inserted
+        UNION
+        SELECT id_zlecenia FROM deleted
+    );
+END;
+
+--------------------------------------------------
+
+CREATE TRIGGER trg_AktualizujKosztZlecenia_Czesci
+ON Zlecenia_Czesci
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE z
+    SET koszt_calkowity = dbo.fn_ObliczKosztCalkowity(z.id_zlecenia)
+    FROM Zlecenia z
+    WHERE z.id_zlecenia IN (
+        SELECT id_zlecenia FROM inserted
+        UNION
+        SELECT id_zlecenia FROM deleted
+    );
+END;
+```
+
+## PROVERKA
+
+```sql
+INSERT INTO Klasy_Pojazdow (nazwa, mnoznik)
+VALUES
+('Ekonomiczna', 1.0),
+('Srednia', 1.2),
+('Premium', 1.5);
+
+--------------------------------------------------
+
+INSERT INTO Klienci (imie, nazwisko, telefon)
+VALUES
+('Jan', 'Kowalski', '123456789'),
+('Adam', 'Nowak', '987654321');
+
+--------------------------------------------------
+
+INSERT INTO Pojazdy (
+    id_klienta,
+    marka,
+    model,
+    nr_rejestracyjny,
+    vin,
+    klasa_pojazdu
+)
+VALUES
+(1, 'Skoda', 'Octavia', 'KR12345', 'VIN123456789', 'Ekonomiczna'),
+(2, 'BMW', 'X5', 'WA54321', 'VIN987654321', 'Premium');
+
+--------------------------------------------------
+
+INSERT INTO Pracownicy (
+    imie,
+    nazwisko,
+    stanowisko
+)
+VALUES
+('Piotr', 'Wisniewski', 'Mechanik'),
+('Marek', 'Zielinski', 'Kierownik');
+
+--------------------------------------------------
+
+INSERT INTO Zlecenia (
+    id_pojazdu,
+    data_przyjecia,
+    status,
+    przebieg,
+    opis
+)
+VALUES
+(1, '2025-08-10', 'Oczekujace', 180000, 'Wymiana oleju'),
+(2, '2025-08-11', 'W trakcie', 95000, 'Naprawa hamulcow');
+
+--------------------------------------------------
+
+INSERT INTO Czesci (nazwa, cena)
+VALUES
+('Filtr oleju', 50.00),
+('Klocki hamulcowe', 300.00);
+
+--------------------------------------------------
+
+INSERT INTO Uslugi (nazwa, cena_jednostkowa)
+VALUES
+('Wymiana oleju', 150.00),
+('Wymiana hamulcow', 400.00);
+
+--------------------------------------------------
+
+INSERT INTO Zlecenia_Czesci (
+    id_zlecenia,
+    id_czesci,
+    ilosc
+)
+VALUES
+(1, 1, 1),
+(2, 2, 1);
+
+--------------------------------------------------
+
+INSERT INTO Zlecenia_Uslugi (
+    id_zlecenia,
+    id_uslugi,
+    ilosc
+)
+VALUES
+(1, 1, 1),
+(2, 2, 1);
 ```
