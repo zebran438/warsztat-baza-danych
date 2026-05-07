@@ -347,19 +347,21 @@ CREATE TABLE Zlecenia_Uslugi (
 #Widoki
 
 ```sql
-CREATE VIEW v_Pelny_Raport_Zlecenia AS
+CREATE VIEW v_Koszty_Uslug_Z_Mnoznikiem AS
 SELECT 
     z.id_zlecenia,
-    p.marka,
-    p.model,
     p.nr_rejestracyjny,
-    z.data_przyjecia,
-    z.data_zakonczenia,
-    z.status,
-    z.przebieg,
-    z.koszt_calkowity
-FROM Zlecenia z
-JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu;
+    kp.nazwa AS klasa_pojazdu,
+    kp.mnoznik,
+    u.nazwa AS nazwa_uslugi,
+    u.cena_jednostkowa AS cena_bazowa,
+    zu.ilosc,
+    CAST((u.cena_jednostkowa * zu.ilosc * kp.mnoznik) AS DECIMAL(10,2)) AS koszt_rzeczywisty
+FROM Zlecenia_Uslugi zu
+JOIN Uslugi u ON zu.id_uslugi = u.id_uslugi
+JOIN Zlecenia z ON zu.id_zlecenia = z.id_zlecenia
+JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu
+JOIN Klasy_Pojazdow kp ON p.klasa_pojazdu = kp.nazwa;
 
 --------------------------------------------------
 
