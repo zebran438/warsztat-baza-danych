@@ -108,31 +108,31 @@ Projektowana baza danych powinna umożliwiać:
 
 ## Nazwa tabeli: Klienci
 
-- **Opis:** Tabela przechowuje dane klientów warsztatu.
+- **Opis:** Tabela przechowuje podstawowe dane klientów korzystających z usług warsztatu samochodowego. Dane te są wykorzystywane do kontaktu z klientem oraz powiązania właściciela z jego pojazdami i historią napraw.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
-| id_klienta | INT | Klucz główny, identyfikator klienta |
+| id_klienta | INT | Klucz główny, unikalny identyfikator klienta |
 | imie | VARCHAR(50) | Imię klienta |
 | nazwisko | VARCHAR(50) | Nazwisko klienta |
-| telefon | VARCHAR(15) | Numer telefonu |
+| telefon | VARCHAR(15) | Numer telefonu kontaktowego |
 
 ---
 
 ## Nazwa tabeli: Klasy_Pojazdow
 
-- **Opis:** Tabela przechowuje klasy pojazdów oraz odpowiadające im mnożniki kosztów.
+- **Opis:** Tabela przechowuje klasy pojazdów oraz przypisane do nich mnożniki kosztów usług. Pozwala to uwzględnić różnice w kosztach napraw pomiędzy pojazdami ekonomicznymi, średnimi i premium.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | nazwa | VARCHAR(20) | Klucz główny, nazwa klasy pojazdu |
-| mnoznik | DECIMAL(3,2) | Współczynnik wpływający na koszt naprawy |
+| mnoznik | DECIMAL(3,2) | Współczynnik wpływający na końcowy koszt usług |
 
 ---
 
 ## Nazwa tabeli: Pojazdy
 
-- **Opis:** Tabela przechowuje dane pojazdów klientów.
+- **Opis:** Tabela przechowuje dane pojazdów należących do klientów warsztatu. Każdy pojazd jest przypisany do konkretnego klienta oraz klasy pojazdu wpływającej na koszt napraw.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
@@ -140,69 +140,69 @@ Projektowana baza danych powinna umożliwiać:
 | id_klienta | INT | Klucz obcy → Klienci |
 | marka | VARCHAR(50) | Marka pojazdu |
 | model | VARCHAR(50) | Model pojazdu |
-| nr_rejestracyjny | VARCHAR(20) | Unikalny numer rejestracyjny |
-| vin | VARCHAR(50) | Unikalny numer VIN |
+| nr_rejestracyjny | VARCHAR(20) | Unikalny numer rejestracyjny pojazdu |
+| vin | VARCHAR(50) | Unikalny numer VIN pojazdu |
 | klasa_pojazdu | VARCHAR(20) | Klucz obcy → Klasy_Pojazdow |
 
 ---
 
 ## Nazwa tabeli: Pracownicy
 
-- **Opis:** Tabela przechowuje dane pracowników warsztatu.
+- **Opis:** Tabela zawiera dane pracowników warsztatu, takich jak mechanicy oraz kierownicy. Informacje te pozwalają przypisywać pracowników do konkretnych zleceń naprawczych.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_pracownika | INT | Klucz główny |
 | imie | VARCHAR(50) | Imię pracownika |
 | nazwisko | VARCHAR(50) | Nazwisko pracownika |
-| stanowisko | VARCHAR(50) | Stanowisko |
+| stanowisko | VARCHAR(50) | Stanowisko pracownika w warsztacie |
 
 ---
 
 ## Nazwa tabeli: Zlecenia
 
-- **Opis:** Tabela przechowuje informacje o zleceniach naprawczych.
+- **Opis:** Tabela przechowuje informacje o zleceniach naprawczych realizowanych przez warsztat. Każde zlecenie jest przypisane do konkretnego pojazdu i zawiera informacje o statusie naprawy, przebiegu pojazdu oraz całkowitym koszcie wykonanych prac.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_zlecenia | INT | Klucz główny |
 | id_pojazdu | INT | Klucz obcy → Pojazdy |
-| data_przyjecia | DATE | Data przyjęcia pojazdu |
+| data_przyjecia | DATE | Data przyjęcia pojazdu do warsztatu |
 | data_zakonczenia | DATE | Data zakończenia naprawy |
 | status | VARCHAR(30) | Status zlecenia (Oczekujace, W trakcie, Zakonczone), domyślnie: Oczekujace |
-| przebieg | INT | Przebieg pojazdu |
-| koszt_calkowity | DECIMAL(10,2) | Całkowity koszt naprawy |
-| opis | VARCHAR(255) | Opis usterki lub naprawy |
+| przebieg | INT | Aktualny przebieg pojazdu |
+| koszt_calkowity | DECIMAL(10,2) | Łączny koszt części i usług |
+| opis | VARCHAR(255) | Opis usterki lub wykonanej naprawy |
 
 ---
 
 ## Nazwa tabeli: Czesci
 
-- **Opis:** Tabela przechowuje dane części zamiennych.
+- **Opis:** Tabela zawiera informacje o częściach zamiennych dostępnych i wykorzystywanych podczas realizacji napraw. Dane te są używane do obliczania kosztów zleceń.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_czesci | INT | Klucz główny |
-| nazwa | VARCHAR(100) | Nazwa części |
-| cena | DECIMAL(10,2) | Cena jednostkowa |
+| nazwa | VARCHAR(100) | Nazwa części zamiennej |
+| cena | DECIMAL(10,2) | Cena jednostkowa części |
 
 ---
 
 ## Nazwa tabeli: Uslugi
 
-- **Opis:** Tabela przechowuje dane usług (robocizny).
+- **Opis:** Tabela przechowuje listę usług wykonywanych w warsztacie, takich jak wymiana oleju, diagnostyka czy naprawa hamulców. Koszt usług może być modyfikowany przez mnożnik klasy pojazdu.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_uslugi | INT | Klucz główny |
 | nazwa | VARCHAR(100) | Nazwa usługi |
-| cena_jednostkowa | DECIMAL(10,2) | Cena usługi |
+| cena_jednostkowa | DECIMAL(10,2) | Bazowa cena wykonania usługi |
 
 ---
 
 ## Nazwa tabeli: Zlecenia_Pracownicy
 
-- **Opis:** Tabela łącząca zlecenia z pracownikami (relacja wiele-do-wielu).
+- **Opis:** Tabela pośrednia realizująca relację wiele-do-wielu pomiędzy zleceniami a pracownikami. Pozwala określić, którzy pracownicy uczestniczyli w realizacji konkretnego zlecenia.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
@@ -213,26 +213,25 @@ Projektowana baza danych powinna umożliwiać:
 
 ## Nazwa tabeli: Zlecenia_Czesci
 
-- **Opis:** Tabela przechowuje informacje o częściach użytych w zleceniach.
+- **Opis:** Tabela przechowuje informacje o częściach wykorzystanych podczas realizacji konkretnego zlecenia naprawczego wraz z ich ilością.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_zlecenia | INT | Klucz obcy → Zlecenia |
 | id_czesci | INT | Klucz obcy → Czesci |
-| ilosc | INT | Ilość użytych części |
+| ilosc | INT | Ilość wykorzystanych części |
 
 ---
 
 ## Nazwa tabeli: Zlecenia_Uslugi
 
-- **Opis:** Tabela przechowuje informacje o usługach wykonanych w ramach zleceń.
+- **Opis:** Tabela przechowuje informacje o usługach wykonanych w ramach konkretnego zlecenia oraz ich ilości. Dane te są wykorzystywane do obliczania kosztu całkowitego naprawy.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
 |---------------|-----|------------|
 | id_zlecenia | INT | Klucz obcy → Zlecenia |
 | id_uslugi | INT | Klucz obcy → Uslugi |
 | ilosc | INT | Ilość wykonanych usług |
-
 
 
 # 4. Implementacja
