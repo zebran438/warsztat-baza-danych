@@ -98,114 +98,157 @@ Projektowana baza danych powinna umożliwiać:
 - Jako kierownik chcę zarządzać pracownikami, aby efektywnie organizować pracę warsztatu.  
 - Jako kierownik chcę widzieć raport zysków z podziałem na sprzedane części i wykonane usługi mechaników.
 
-# 3. Projekt bazy danych
+# 3. Opis tabel
+<img width="1213" height="854" alt="image" src="https://github.com/user-attachments/assets/7d44ae2d-7242-4d1e-8e6f-c92818678db2" />
 
-<img width="748" height="782" alt="image" src="https://github.com/user-attachments/assets/56968c47-a29c-4c94-9f4a-68db729044ab" />
-
-# Opis poszczególnych tabel
 
 ---
 
 ## Nazwa tabeli: Klienci
 
-- **Opis:** Tabela przechowuje podstawowe dane klientów korzystających z usług warsztatu samochodowego. Dane te są wykorzystywane do kontaktu z klientem oraz powiązania właściciela z jego pojazdami i historią napraw.
+**Opis:**  
+Tabela przechowuje dane klientów korzystających z usług warsztatu samochodowego. Dane te umożliwiają identyfikację właściciela pojazdu oraz kontakt z klientem.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_klienta | INT | Klucz główny, unikalny identyfikator klienta |
 | imie | VARCHAR(50) | Imię klienta |
 | nazwisko | VARCHAR(50) | Nazwisko klienta |
-| telefon | VARCHAR(15) | Numer telefonu kontaktowego |
+| telefon | VARCHAR(15) | Numer telefonu klienta |
 
 ---
 
 ## Nazwa tabeli: Klasy_Pojazdow
 
-- **Opis:** Tabela przechowuje klasy pojazdów oraz przypisane do nich mnożniki kosztów usług. Pozwala to uwzględnić różnice w kosztach napraw pomiędzy pojazdami ekonomicznymi, średnimi i premium.
+**Opis:**  
+Tabela przechowuje klasy pojazdów oraz odpowiadające im mnożniki kosztów usług. Pozwala to uwzględnić różnice w kosztach napraw pomiędzy pojazdami różnych klas.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
-| nazwa | VARCHAR(20) | Klucz główny, nazwa klasy pojazdu |
-| mnoznik | DECIMAL(3,2) | Współczynnik wpływający na końcowy koszt usług |
+|---|---|---|
+| id_klasy | INT | Klucz główny |
+| nazwa | VARCHAR(20) | Nazwa klasy pojazdu |
+| mnoznik | DECIMAL(3,2) | Współczynnik wpływający na koszt usług |
+
+---
+
+## Nazwa tabeli: Marki
+
+**Opis:**  
+Tabela przechowuje listę marek pojazdów dostępnych w systemie. Rozdzielenie marek i modeli pozwala uniknąć powielania danych.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---|---|---|
+| id_marki | INT | Klucz główny |
+| nazwa | VARCHAR(50) | Nazwa marki pojazdu |
+
+---
+
+## Nazwa tabeli: Modele
+
+**Opis:**  
+Tabela przechowuje modele pojazdów przypisane do konkretnych marek.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---|---|---|
+| id_modelu | INT | Klucz główny |
+| id_marki | INT | Klucz obcy → Marki |
+| nazwa | VARCHAR(50) | Nazwa modelu pojazdu |
 
 ---
 
 ## Nazwa tabeli: Pojazdy
 
-- **Opis:** Tabela przechowuje dane pojazdów należących do klientów warsztatu. Każdy pojazd jest przypisany do konkretnego klienta oraz klasy pojazdu wpływającej na koszt napraw.
+**Opis:**  
+Tabela przechowuje dane pojazdów należących do klientów warsztatu. Każdy pojazd jest przypisany do modelu oraz klasy pojazdu.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_pojazdu | INT | Klucz główny |
 | id_klienta | INT | Klucz obcy → Klienci |
-| marka | VARCHAR(50) | Marka pojazdu |
-| model | VARCHAR(50) | Model pojazdu |
-| nr_rejestracyjny | VARCHAR(20) | Unikalny numer rejestracyjny pojazdu |
-| vin | VARCHAR(50) | Unikalny numer VIN pojazdu |
-| klasa_pojazdu | VARCHAR(20) | Klucz obcy → Klasy_Pojazdow |
+| id_modelu | INT | Klucz obcy → Modele |
+| id_klasy | INT | Klucz obcy → Klasy_Pojazdow |
+| nr_rejestracyjny | VARCHAR(20) | Unikalny numer rejestracyjny |
+| vin | VARCHAR(50) | Unikalny numer VIN |
 
 ---
 
 ## Nazwa tabeli: Pracownicy
 
-- **Opis:** Tabela zawiera dane pracowników warsztatu, takich jak mechanicy oraz kierownicy. Informacje te pozwalają przypisywać pracowników do konkretnych zleceń naprawczych.
+**Opis:**  
+Tabela przechowuje dane pracowników warsztatu, takich jak mechanicy oraz kierownicy.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_pracownika | INT | Klucz główny |
 | imie | VARCHAR(50) | Imię pracownika |
 | nazwisko | VARCHAR(50) | Nazwisko pracownika |
-| stanowisko | VARCHAR(50) | Stanowisko pracownika w warsztacie |
+| stanowisko | VARCHAR(50) | Stanowisko pracownika |
 
 ---
 
 ## Nazwa tabeli: Zlecenia
 
-- **Opis:** Tabela przechowuje informacje o zleceniach naprawczych realizowanych przez warsztat. Każde zlecenie jest przypisane do konkretnego pojazdu i zawiera informacje o statusie naprawy, przebiegu pojazdu oraz całkowitym koszcie wykonanych prac.
+**Opis:**  
+Tabela przechowuje informacje o zleceniach naprawczych realizowanych w warsztacie samochodowym.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_zlecenia | INT | Klucz główny |
 | id_pojazdu | INT | Klucz obcy → Pojazdy |
-| data_przyjecia | DATE | Data przyjęcia pojazdu do warsztatu |
+| data_przyjecia | DATE | Data przyjęcia pojazdu |
 | data_zakonczenia | DATE | Data zakończenia naprawy |
-| status | VARCHAR(30) | Status zlecenia (Oczekujace, W trakcie, Zakonczone), domyślnie: Oczekujace |
+| status | VARCHAR(30) | Status zlecenia |
 | przebieg | INT | Aktualny przebieg pojazdu |
-| koszt_calkowity | DECIMAL(10,2) | Łączny koszt części i usług |
-| opis | VARCHAR(255) | Opis usterki lub wykonanej naprawy |
+| opis | VARCHAR(255) | Opis usterki lub naprawy |
 
 ---
 
 ## Nazwa tabeli: Czesci
 
-- **Opis:** Tabela zawiera informacje o częściach zamiennych dostępnych i wykorzystywanych podczas realizacji napraw. Dane te są używane do obliczania kosztów zleceń.
+**Opis:**  
+Tabela przechowuje dane części zamiennych wykorzystywanych podczas napraw.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_czesci | INT | Klucz główny |
-| nazwa | VARCHAR(100) | Nazwa części zamiennej |
-| cena | DECIMAL(10,2) | Cena jednostkowa części |
+| nazwa | VARCHAR(100) | Nazwa części |
+| cena | DECIMAL(10,2) | Aktualna cena części |
+
+---
+
+## Nazwa tabeli: Czesci_Modele
+
+**Opis:**  
+Tabela pośrednia realizująca relację wiele-do-wielu pomiędzy częściami a modelami pojazdów. Pozwala określić, które części są kompatybilne z konkretnymi modelami samochodów.
+
+| Nazwa atrybutu | Typ | Opis/Uwagi |
+|---|---|---|
+| id_czesci | INT | Klucz obcy → Czesci |
+| id_modelu | INT | Klucz obcy → Modele |
 
 ---
 
 ## Nazwa tabeli: Uslugi
 
-- **Opis:** Tabela przechowuje listę usług wykonywanych w warsztacie, takich jak wymiana oleju, diagnostyka czy naprawa hamulców. Koszt usług może być modyfikowany przez mnożnik klasy pojazdu.
+**Opis:**  
+Tabela przechowuje listę usług wykonywanych w warsztacie samochodowym.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
 | id_uslugi | INT | Klucz główny |
 | nazwa | VARCHAR(100) | Nazwa usługi |
-| cena_jednostkowa | DECIMAL(10,2) | Bazowa cena wykonania usługi |
+| cena_jednostkowa | DECIMAL(10,2) | Bazowa cena usługi |
 
 ---
 
 ## Nazwa tabeli: Zlecenia_Pracownicy
 
-- **Opis:** Tabela pośrednia realizująca relację wiele-do-wielu pomiędzy zleceniami a pracownikami. Pozwala określić, którzy pracownicy uczestniczyli w realizacji konkretnego zlecenia.
+**Opis:**  
+Tabela pośrednia realizująca relację wiele-do-wielu pomiędzy zleceniami a pracownikami.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
+| id_zlecenia_pracownika | INT | Klucz główny |
 | id_zlecenia | INT | Klucz obcy → Zlecenia |
 | id_pracownika | INT | Klucz obcy → Pracownicy |
 
@@ -213,32 +256,40 @@ Projektowana baza danych powinna umożliwiać:
 
 ## Nazwa tabeli: Zlecenia_Czesci
 
-- **Opis:** Tabela przechowuje informacje o częściach wykorzystanych podczas realizacji konkretnego zlecenia naprawczego wraz z ich ilością.
+**Opis:**  
+Tabela przechowuje informacje o częściach wykorzystanych podczas realizacji konkretnego zlecenia wraz z ilością oraz ceną obowiązującą w momencie naprawy.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
+| id_zlecenia_czesci | INT | Klucz główny |
 | id_zlecenia | INT | Klucz obcy → Zlecenia |
 | id_czesci | INT | Klucz obcy → Czesci |
-| ilosc | INT | Ilość wykorzystanych części |
+| ilosc | INT | Ilość użytych części |
+| cena_w_momencie | DECIMAL(10,2) | Cena części w momencie naprawy |
 
 ---
 
 ## Nazwa tabeli: Zlecenia_Uslugi
 
-- **Opis:** Tabela przechowuje informacje o usługach wykonanych w ramach konkretnego zlecenia oraz ich ilości. Dane te są wykorzystywane do obliczania kosztu całkowitego naprawy.
+**Opis:**  
+Tabela przechowuje informacje o usługach wykonanych w ramach zlecenia wraz z ilością oraz ceną obowiązującą w momencie realizacji usługi.
 
 | Nazwa atrybutu | Typ | Opis/Uwagi |
-|---------------|-----|------------|
+|---|---|---|
+| id_zlecenia_uslugi | INT | Klucz główny |
 | id_zlecenia | INT | Klucz obcy → Zlecenia |
 | id_uslugi | INT | Klucz obcy → Uslugi |
 | ilosc | INT | Ilość wykonanych usług |
+| cena_w_momencie | DECIMAL(10,2) | Cena usługi w momencie realizacji |
 
 
 # 4. Implementacja
 
+## Kod poleceń DDL
 
 ```sql
-
+--------------------------------------------------
+-- KLIENCI
 --------------------------------------------------
 
 CREATE TABLE Klienci (
@@ -249,26 +300,65 @@ CREATE TABLE Klienci (
 );
 
 --------------------------------------------------
+-- KLASY POJAZDOW
+--------------------------------------------------
 
 CREATE TABLE Klasy_Pojazdow (
-    nazwa VARCHAR(20) PRIMARY KEY,
+    id_klasy INT PRIMARY KEY IDENTITY(1,1),
+    nazwa VARCHAR(20) NOT NULL UNIQUE,
     mnoznik DECIMAL(3,2) NOT NULL
 );
 
 --------------------------------------------------
+-- MARKI
+--------------------------------------------------
+
+CREATE TABLE Marki (
+    id_marki INT PRIMARY KEY IDENTITY(1,1),
+    nazwa VARCHAR(50) NOT NULL UNIQUE
+);
+
+--------------------------------------------------
+-- MODELE
+--------------------------------------------------
+
+CREATE TABLE Modele (
+    id_modelu INT PRIMARY KEY IDENTITY(1,1),
+
+    id_marki INT NOT NULL,
+
+    nazwa VARCHAR(50) NOT NULL,
+
+    FOREIGN KEY (id_marki)
+        REFERENCES Marki(id_marki)
+);
+
+--------------------------------------------------
+-- POJAZDY
+--------------------------------------------------
 
 CREATE TABLE Pojazdy (
     id_pojazdu INT PRIMARY KEY IDENTITY(1,1),
+
     id_klienta INT NOT NULL,
-    marka VARCHAR(50) NOT NULL,
-    model VARCHAR(50) NOT NULL,
+    id_modelu INT NOT NULL,
+    id_klasy INT NOT NULL,
+
     nr_rejestracyjny VARCHAR(20) UNIQUE NOT NULL,
     vin VARCHAR(50) UNIQUE,
-    klasa_pojazdu VARCHAR(20) NOT NULL,
-    FOREIGN KEY (id_klienta) REFERENCES Klienci(id_klienta),
-    FOREIGN KEY (klasa_pojazdu) REFERENCES Klasy_Pojazdow(nazwa)
+
+    FOREIGN KEY (id_klienta)
+        REFERENCES Klienci(id_klienta),
+
+    FOREIGN KEY (id_modelu)
+        REFERENCES Modele(id_modelu),
+
+    FOREIGN KEY (id_klasy)
+        REFERENCES Klasy_Pojazdow(id_klasy)
 );
 
+--------------------------------------------------
+-- PRACOWNICY
 --------------------------------------------------
 
 CREATE TABLE Pracownicy (
@@ -279,22 +369,42 @@ CREATE TABLE Pracownicy (
 );
 
 --------------------------------------------------
+-- ZLECENIA
+--------------------------------------------------
 
 CREATE TABLE Zlecenia (
     id_zlecenia INT PRIMARY KEY IDENTITY(1,1),
+
     id_pojazdu INT NOT NULL,
+
     data_przyjecia DATE NOT NULL,
     data_zakonczenia DATE,
-    status VARCHAR(30) 
-        CONSTRAINT chk_status 
-        CHECK (status IN ('Oczekujace', 'W trakcie', 'Zakonczone'))
+
+    status VARCHAR(30)
+        CHECK (
+            status IN (
+                'Oczekujace',
+                'W trakcie',
+                'Zakonczone'
+            )
+        )
         DEFAULT 'Oczekujace',
+
     przebieg INT NOT NULL,
-    koszt_calkowity DECIMAL(10,2),
+
     opis VARCHAR(255),
-    FOREIGN KEY (id_pojazdu) REFERENCES Pojazdy(id_pojazdu)
+
+    FOREIGN KEY (id_pojazdu)
+        REFERENCES Pojazdy(id_pojazdu),
+
+    CHECK (
+        data_zakonczenia IS NULL
+        OR data_zakonczenia >= data_przyjecia
+    )
 );
 
+--------------------------------------------------
+-- CZESCI
 --------------------------------------------------
 
 CREATE TABLE Czesci (
@@ -304,6 +414,28 @@ CREATE TABLE Czesci (
 );
 
 --------------------------------------------------
+-- CZESCI ↔ MODELE
+--------------------------------------------------
+
+CREATE TABLE Czesci_Modele (
+    id_czesci INT NOT NULL,
+    id_modelu INT NOT NULL,
+
+    PRIMARY KEY (
+        id_czesci,
+        id_modelu
+    ),
+
+    FOREIGN KEY (id_czesci)
+        REFERENCES Czesci(id_czesci),
+
+    FOREIGN KEY (id_modelu)
+        REFERENCES Modele(id_modelu)
+);
+
+--------------------------------------------------
+-- USLUGI
+--------------------------------------------------
 
 CREATE TABLE Uslugi (
     id_uslugi INT PRIMARY KEY IDENTITY(1,1),
@@ -312,148 +444,202 @@ CREATE TABLE Uslugi (
 );
 
 --------------------------------------------------
+-- ZLECENIA ↔ PRACOWNICY
+--------------------------------------------------
 
 CREATE TABLE Zlecenia_Pracownicy (
+
+    id_zlecenia_pracownika INT
+        PRIMARY KEY IDENTITY(1,1),
+
     id_zlecenia INT NOT NULL,
+
     id_pracownika INT NOT NULL,
-    PRIMARY KEY (id_zlecenia, id_pracownika),
-    FOREIGN KEY (id_zlecenia) REFERENCES Zlecenia(id_zlecenia),
-    FOREIGN KEY (id_pracownika) REFERENCES Pracownicy(id_pracownika)
+
+    FOREIGN KEY (id_zlecenia)
+        REFERENCES Zlecenia(id_zlecenia),
+
+    FOREIGN KEY (id_pracownika)
+        REFERENCES Pracownicy(id_pracownika)
 );
 
+--------------------------------------------------
+-- ZLECENIA ↔ CZESCI
 --------------------------------------------------
 
 CREATE TABLE Zlecenia_Czesci (
+
+    id_zlecenia_czesci INT
+        PRIMARY KEY IDENTITY(1,1),
+
     id_zlecenia INT NOT NULL,
+
     id_czesci INT NOT NULL,
+
     ilosc INT NOT NULL DEFAULT 1,
-    PRIMARY KEY (id_zlecenia, id_czesci),
-    FOREIGN KEY (id_zlecenia) REFERENCES Zlecenia(id_zlecenia),
-    FOREIGN KEY (id_czesci) REFERENCES Czesci(id_czesci)
+
+    cena_w_momencie DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (id_zlecenia)
+        REFERENCES Zlecenia(id_zlecenia),
+
+    FOREIGN KEY (id_czesci)
+        REFERENCES Czesci(id_czesci)
 );
 
 --------------------------------------------------
+-- ZLECENIA ↔ USLUGI
+--------------------------------------------------
 
 CREATE TABLE Zlecenia_Uslugi (
+
+    id_zlecenia_uslugi INT
+        PRIMARY KEY IDENTITY(1,1),
+
     id_zlecenia INT NOT NULL,
+
     id_uslugi INT NOT NULL,
+
     ilosc INT NOT NULL DEFAULT 1,
-    PRIMARY KEY (id_zlecenia, id_uslugi),
-    FOREIGN KEY (id_zlecenia) REFERENCES Zlecenia(id_zlecenia),
-    FOREIGN KEY (id_uslugi) REFERENCES Uslugi(id_uslugi)
+
+    cena_w_momencie DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (id_zlecenia)
+        REFERENCES Zlecenia(id_zlecenia),
+
+    FOREIGN KEY (id_uslugi)
+        REFERENCES Uslugi(id_uslugi)
 );
 ```
-# Widoki
+
+## Widoki
 
 ```sql
 CREATE VIEW v_Koszty_Uslug_Z_Mnoznikiem AS
 SELECT 
     z.id_zlecenia,
-    p.marka,
-    p.model,
+
+    ma.nazwa AS marka,
+    mo.nazwa AS model,
+
     p.nr_rejestracyjny,
+
     kp.nazwa AS klasa_pojazdu,
     kp.mnoznik,
+
     u.nazwa AS nazwa_uslugi,
-    u.cena_jednostkowa AS cena_bazowa,
+
+    zu.cena_w_momencie AS cena_bazowa,
+
     zu.ilosc,
+
     CAST(
-        (u.cena_jednostkowa * zu.ilosc * kp.mnoznik)
-        AS DECIMAL(10,2)
+        (
+            zu.cena_w_momencie
+            * zu.ilosc
+            * kp.mnoznik
+        ) AS DECIMAL(10,2)
     ) AS koszt_rzeczywisty
+
 FROM Zlecenia_Uslugi zu
-JOIN Uslugi u 
+
+JOIN Uslugi u
     ON zu.id_uslugi = u.id_uslugi
-JOIN Zlecenia z 
+
+JOIN Zlecenia z
     ON zu.id_zlecenia = z.id_zlecenia
-JOIN Pojazdy p 
+
+JOIN Pojazdy p
     ON z.id_pojazdu = p.id_pojazdu
-JOIN Klasy_Pojazdow kp 
-    ON p.klasa_pojazdu = kp.nazwa;
 
---------------------------------------------------
+JOIN Modele mo
+    ON p.id_modelu = mo.id_modelu
 
-CREATE VIEW v_Pelny_Raport_Zlecenia AS
-SELECT 
-    z.id_zlecenia,
-    p.marka,
-    p.model,
-    p.nr_rejestracyjny,
-    z.data_przyjecia,
-    z.data_zakonczenia,
-    z.status,
-    z.przebieg,
-    z.koszt_calkowity
-FROM Zlecenia z
-JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu;
+JOIN Marki ma
+    ON mo.id_marki = ma.id_marki
+
+JOIN Klasy_Pojazdow kp
+    ON p.id_klasy = kp.id_klasy;
 ```
-# Funkcja
+
+## Funkcje
 
 ```sql
-CREATE FUNCTION dbo.fn_ObliczKosztCalkowity (@id_zlecenia INT)
+CREATE FUNCTION dbo.fn_ObliczKosztCalkowity (
+    @id_zlecenia INT
+)
 RETURNS DECIMAL(10,2)
 AS
 BEGIN
+
     DECLARE @koszt_czesci DECIMAL(10,2) = 0;
     DECLARE @koszt_uslug DECIMAL(10,2) = 0;
     DECLARE @mnoznik DECIMAL(3,2) = 1.0;
 
     SELECT @mnoznik = kp.mnoznik
     FROM Zlecenia z
-    JOIN Pojazdy p ON z.id_pojazdu = p.id_pojazdu
-    JOIN Klasy_Pojazdow kp ON p.klasa_pojazdu = kp.nazwa
+
+    JOIN Pojazdy p
+        ON z.id_pojazdu = p.id_pojazdu
+
+    JOIN Klasy_Pojazdow kp
+        ON p.id_klasy = kp.id_klasy
+
     WHERE z.id_zlecenia = @id_zlecenia;
 
-    SELECT @koszt_czesci = ISNULL(SUM(c.cena * zc.ilosc), 0)
+    SELECT @koszt_czesci =
+        ISNULL(
+            SUM(
+                zc.cena_w_momencie
+                * zc.ilosc
+            ),
+            0
+        )
     FROM Zlecenia_Czesci zc
-    JOIN Czesci c ON zc.id_czesci = c.id_czesci
+
     WHERE zc.id_zlecenia = @id_zlecenia;
 
-    SELECT @koszt_uslug = ISNULL(SUM(u.cena_jednostkowa * zu.ilosc * @mnoznik), 0)
+    SELECT @koszt_uslug =
+        ISNULL(
+            SUM(
+                zu.cena_w_momencie
+                * zu.ilosc
+                * @mnoznik
+            ),
+            0
+        )
     FROM Zlecenia_Uslugi zu
-    JOIN Uslugi u ON zu.id_uslugi = u.id_uslugi
+
     WHERE zu.id_zlecenia = @id_zlecenia;
 
     RETURN @koszt_czesci + @koszt_uslug;
+
 END;
 ```
-# Tiggery
+
+## Triggery
 
 ```sql
-CREATE TRIGGER trg_AktualizujKosztZlecenia_Uslugi
+CREATE TRIGGER trg_Log_Uslugi
 ON Zlecenia_Uslugi
-AFTER INSERT, UPDATE, DELETE
+AFTER INSERT
 AS
 BEGIN
-    SET NOCOUNT ON;
 
-    UPDATE z
-    SET koszt_calkowity = dbo.fn_ObliczKosztCalkowity(z.id_zlecenia)
-    FROM Zlecenia z
-    WHERE z.id_zlecenia IN (
-        SELECT id_zlecenia FROM inserted
-        UNION
-        SELECT id_zlecenia FROM deleted
-    );
+    PRINT 'Dodano nowa usluge do zlecenia';
+
 END;
+```
 
---------------------------------------------------
-
-CREATE TRIGGER trg_AktualizujKosztZlecenia_Czesci
+```sql
+CREATE TRIGGER trg_Log_Czesci
 ON Zlecenia_Czesci
-AFTER INSERT, UPDATE, DELETE
+AFTER INSERT
 AS
 BEGIN
-    SET NOCOUNT ON;
 
-    UPDATE z
-    SET koszt_calkowity = dbo.fn_ObliczKosztCalkowity(z.id_zlecenia)
-    FROM Zlecenia z
-    WHERE z.id_zlecenia IN (
-        SELECT id_zlecenia FROM inserted
-        UNION
-        SELECT id_zlecenia FROM deleted
-    );
+    PRINT 'Dodano nowa czesc do zlecenia';
+
 END;
 ```
 
