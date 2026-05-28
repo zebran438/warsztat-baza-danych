@@ -582,6 +582,85 @@ JOIN Marki ma
     ON mo.id_marki = ma.id_marki;
 ```
 
+```sql
+CREATE VIEW v_Raport_Zlecenia AS
+SELECT
+
+    z.id_zlecenia,
+
+    ma.nazwa AS marka,
+
+    mo.nazwa AS model,
+
+    p.nr_rejestracyjny,
+
+    kp.nazwa AS klasa_pojazdu,
+
+    kp.mnoznik,
+
+    z.status,
+
+    z.przebieg,
+
+    z.opis,
+
+    CAST(
+        ISNULL(cz.koszt_czesci, 0)
+        +
+        ISNULL(us.koszt_uslug, 0)
+    AS DECIMAL(10,2))
+    AS koszt_calkowity
+
+FROM Zlecenia z
+
+JOIN Pojazdy p
+    ON z.id_pojazdu = p.id_pojazdu
+
+JOIN Modele mo
+    ON p.id_modelu = mo.id_modelu
+
+JOIN Marki ma
+    ON mo.id_marki = ma.id_marki
+
+JOIN Klasy_Pojazdow kp
+    ON p.id_klasy = kp.id_klasy
+
+OUTER APPLY
+(
+    SELECT
+        SUM(
+            zc.cena_w_momencie
+            * zc.ilosc
+        ) AS koszt_czesci
+
+    FROM Zlecenia_Czesci zc
+
+    WHERE zc.id_zlecenia = z.id_zlecenia
+
+) cz
+
+OUTER APPLY
+(
+    SELECT
+        SUM(koszt) AS koszt_uslug
+    FROM
+    (
+        SELECT
+            (
+                zu.cena_w_momencie
+                * zu.ilosc
+                * kp.mnoznik
+            ) AS koszt
+
+        FROM Zlecenia_Uslugi zu
+
+        WHERE zu.id_zlecenia = z.id_zlecenia
+
+    ) x
+
+) us;
+```
+
 ## Funkcje
 
 ```sql
@@ -635,6 +714,86 @@ BEGIN
     RETURN @koszt_czesci + @koszt_uslug;
 
 END;
+```
+
+```sql
+CREATE FUNCTION dbo.fn_Statystyka_Klienta (
+    @id_klienta INT
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT
+
+        k.id_klienta,
+
+        k.imie,
+
+        k.nazwisko,
+
+        COUNT(DISTINCT z.id_zlecenia)
+        AS liczba_zlecen,
+
+        CAST(
+            ISNULL(
+                SUM(
+                    ISNULL(cz.koszt_czesci, 0)
+                    +
+                    ISNULL(us.koszt_uslug, 0)
+                ),
+                0
+            )
+        AS DECIMAL(10,2))
+        AS laczny_koszt
+
+    FROM Klienci k
+
+    JOIN Pojazdy p
+        ON k.id_klienta = p.id_klienta
+
+    JOIN Zlecenia z
+        ON p.id_pojazdu = z.id_pojazdu
+
+    JOIN Klasy_Pojazdow kp
+        ON p.id_klasy = kp.id_klasy
+
+    OUTER APPLY
+    (
+        SELECT
+            SUM(
+                zc.cena_w_momencie
+                * zc.ilosc
+            ) AS koszt_czesci
+
+        FROM Zlecenia_Czesci zc
+
+        WHERE zc.id_zlecenia = z.id_zlecenia
+
+    ) cz
+
+    OUTER APPLY
+    (
+        SELECT
+            SUM(
+                zu.cena_w_momencie
+                * zu.ilosc
+            ) * kp.mnoznik
+            AS koszt_uslug
+
+        FROM Zlecenia_Uslugi zu
+
+        WHERE zu.id_zlecenia = z.id_zlecenia
+
+    ) us
+
+    WHERE k.id_klienta = @id_klienta
+
+    GROUP BY
+        k.id_klienta,
+        k.imie,
+        k.nazwisko
+);
 ```
 
 ## Triggery
