@@ -564,6 +564,9 @@ JOIN Klasy_Pojazdow kp
 ```sql
 CREATE VIEW v_Czesci_Dla_Modeli AS
 SELECT
+
+    c.id_czesci,
+
     c.nazwa AS czesc,
 
     ma.nazwa AS marka,
