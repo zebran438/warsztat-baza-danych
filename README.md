@@ -664,6 +664,75 @@ OUTER APPLY
 ) us;
 ```
 
+```sql
+CREATE VIEW v_Szczegoly_Zlecenia AS
+
+SELECT
+
+    z.id_zlecenia,
+
+    'Usluga' AS typ,
+
+    u.nazwa AS nazwa,
+
+    zu.ilosc,
+
+    zu.cena_w_momencie AS cena_jednostkowa,
+
+    kp.mnoznik,
+
+    CAST(
+        zu.cena_w_momencie
+        * zu.ilosc
+        * kp.mnoznik
+    AS DECIMAL(10,2))
+    AS koszt
+
+FROM Zlecenia_Uslugi zu
+
+JOIN Uslugi u
+    ON zu.id_uslugi = u.id_uslugi
+
+JOIN Zlecenia z
+    ON zu.id_zlecenia = z.id_zlecenia
+
+JOIN Pojazdy p
+    ON z.id_pojazdu = p.id_pojazdu
+
+JOIN Klasy_Pojazdow kp
+    ON p.id_klasy = kp.id_klasy
+
+UNION ALL
+
+SELECT
+
+    z.id_zlecenia,
+
+    'Czesc' AS typ,
+
+    c.nazwa AS nazwa,
+
+    zc.ilosc,
+
+    zc.cena_w_momencie AS cena_jednostkowa,
+
+    NULL AS mnoznik,
+
+    CAST(
+        zc.cena_w_momencie
+        * zc.ilosc
+    AS DECIMAL(10,2))
+    AS koszt
+
+FROM Zlecenia_Czesci zc
+
+JOIN Czesci c
+    ON zc.id_czesci = c.id_czesci
+
+JOIN Zlecenia z
+    ON zc.id_zlecenia = z.id_zlecenia;
+```
+
 ## Funkcje
 
 ```sql
