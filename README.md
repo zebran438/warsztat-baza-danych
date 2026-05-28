@@ -561,6 +561,26 @@ JOIN Marki ma
 JOIN Klasy_Pojazdow kp
     ON p.id_klasy = kp.id_klasy;
 ```
+```sql
+CREATE VIEW v_Czesci_Dla_Modeli AS
+SELECT
+    c.nazwa AS czesc,
+
+    ma.nazwa AS marka,
+
+    mo.nazwa AS model
+
+FROM Czesci_Modele cm
+
+JOIN Czesci c
+    ON cm.id_czesci = c.id_czesci
+
+JOIN Modele mo
+    ON cm.id_modelu = mo.id_modelu
+
+JOIN Marki ma
+    ON mo.id_marki = ma.id_marki;
+```
 
 ## Funkcje
 
