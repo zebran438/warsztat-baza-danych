@@ -1,3 +1,4 @@
+
 **Temat:** Warsztat samochodowy  
 
 **Autorzy:**  Raman Dzerban, Mykyta Petrov
@@ -285,43 +286,37 @@ Tabela przechowuje informacje o usługach wykonanych w ramach zlecenia wraz z il
 
 # 4. Implementacja
 
-## Kod poleceń DDL
 
+
+## KLIENCI
 ```sql
---------------------------------------------------
--- KLIENCI
---------------------------------------------------
-
 CREATE TABLE Klienci (
     id_klienta INT PRIMARY KEY IDENTITY(1,1),
     imie VARCHAR(50) NOT NULL,
     nazwisko VARCHAR(50) NOT NULL,
     telefon VARCHAR(15)
 );
+```
 
---------------------------------------------------
--- KLASY POJAZDOW
---------------------------------------------------
-
+## KLASY POJAZDOW
+```sql
 CREATE TABLE Klasy_Pojazdow (
     id_klasy INT PRIMARY KEY IDENTITY(1,1),
     nazwa VARCHAR(20) NOT NULL UNIQUE,
     mnoznik DECIMAL(3,2) NOT NULL
 );
+```
 
---------------------------------------------------
--- MARKI
---------------------------------------------------
-
+## MARKI
+```sql
 CREATE TABLE Marki (
     id_marki INT PRIMARY KEY IDENTITY(1,1),
     nazwa VARCHAR(50) NOT NULL UNIQUE
 );
+```
 
---------------------------------------------------
--- MODELE
---------------------------------------------------
-
+## MODELE
+```sql
 CREATE TABLE Modele (
     id_modelu INT PRIMARY KEY IDENTITY(1,1),
 
@@ -332,11 +327,10 @@ CREATE TABLE Modele (
     FOREIGN KEY (id_marki)
         REFERENCES Marki(id_marki)
 );
+```
 
---------------------------------------------------
--- POJAZDY
---------------------------------------------------
-
+## POJAZDY
+```sql
 CREATE TABLE Pojazdy (
     id_pojazdu INT PRIMARY KEY IDENTITY(1,1),
 
@@ -356,22 +350,20 @@ CREATE TABLE Pojazdy (
     FOREIGN KEY (id_klasy)
         REFERENCES Klasy_Pojazdow(id_klasy)
 );
+```
 
---------------------------------------------------
--- PRACOWNICY
---------------------------------------------------
-
+## PRACOWNICY
+```sql
 CREATE TABLE Pracownicy (
     id_pracownika INT PRIMARY KEY IDENTITY(1,1),
     imie VARCHAR(50) NOT NULL,
     nazwisko VARCHAR(50) NOT NULL,
     stanowisko VARCHAR(50) NOT NULL
 );
+```
 
---------------------------------------------------
--- ZLECENIA
---------------------------------------------------
-
+## ZLECENIA
+```sql
 CREATE TABLE Zlecenia (
     id_zlecenia INT PRIMARY KEY IDENTITY(1,1),
 
@@ -402,21 +394,19 @@ CREATE TABLE Zlecenia (
         OR data_zakonczenia >= data_przyjecia
     )
 );
+```
 
---------------------------------------------------
--- CZESCI
---------------------------------------------------
-
+## CZESCI
+```sql
 CREATE TABLE Czesci (
     id_czesci INT PRIMARY KEY IDENTITY(1,1),
     nazwa VARCHAR(100) NOT NULL,
     cena DECIMAL(10,2) NOT NULL
 );
+````
 
---------------------------------------------------
--- CZESCI ↔ MODELE
---------------------------------------------------
-
+## CZESCI ↔ MODELE
+```sql
 CREATE TABLE Czesci_Modele (
     id_czesci INT NOT NULL,
     id_modelu INT NOT NULL,
@@ -432,21 +422,19 @@ CREATE TABLE Czesci_Modele (
     FOREIGN KEY (id_modelu)
         REFERENCES Modele(id_modelu)
 );
+```
 
---------------------------------------------------
--- USLUGI
---------------------------------------------------
-
+## USLUGI
+```sql
 CREATE TABLE Uslugi (
     id_uslugi INT PRIMARY KEY IDENTITY(1,1),
     nazwa VARCHAR(100) NOT NULL,
     cena_jednostkowa DECIMAL(10,2) NOT NULL
 );
+```
 
---------------------------------------------------
--- ZLECENIA ↔ PRACOWNICY
---------------------------------------------------
-
+## ZLECENIA ↔ PRACOWNICY
+```sql
 CREATE TABLE Zlecenia_Pracownicy (
 
     id_zlecenia_pracownika INT
@@ -462,11 +450,10 @@ CREATE TABLE Zlecenia_Pracownicy (
     FOREIGN KEY (id_pracownika)
         REFERENCES Pracownicy(id_pracownika)
 );
+```
 
---------------------------------------------------
--- ZLECENIA ↔ CZESCI
---------------------------------------------------
-
+## ZLECENIA ↔ CZESCI
+```sql
 CREATE TABLE Zlecenia_Czesci (
 
     id_zlecenia_czesci INT
@@ -486,11 +473,10 @@ CREATE TABLE Zlecenia_Czesci (
     FOREIGN KEY (id_czesci)
         REFERENCES Czesci(id_czesci)
 );
+```
 
---------------------------------------------------
--- ZLECENIA ↔ USLUGI
---------------------------------------------------
-
+## ZLECENIA ↔ USLUGI
+```sql
 CREATE TABLE Zlecenia_Uslugi (
 
     id_zlecenia_uslugi INT
@@ -512,7 +498,7 @@ CREATE TABLE Zlecenia_Uslugi (
 );
 ```
 
-## Widoki
+# Widoki
 
 ```sql
 CREATE VIEW v_Koszty_Uslug_Z_Mnoznikiem AS
@@ -732,7 +718,7 @@ JOIN Czesci c
 JOIN Zlecenia z
     ON zc.id_zlecenia = z.id_zlecenia;
 ```
-## Procedury
+# Procedury
 
 ```sql
 CREATE PROCEDURE sp_Dodaj_Zlecenie
@@ -773,8 +759,7 @@ END;
 GO
 ```
 
-
-## Funkcje
+# Funkcje
 
 ```sql
 CREATE FUNCTION dbo.fn_ObliczKosztCalkowity (
@@ -909,7 +894,7 @@ RETURN
 );
 ```
 
-## Triggery
+# Triggery
 
 ```sql
 CREATE TRIGGER trg_SprawdzUslugi
@@ -970,5 +955,7 @@ BEGIN
 END;
 GO
 ```
+
+
 
 
