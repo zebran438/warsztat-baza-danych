@@ -732,6 +732,47 @@ JOIN Czesci c
 JOIN Zlecenia z
     ON zc.id_zlecenia = z.id_zlecenia;
 ```
+## Procedury
+
+```sql
+CREATE PROCEDURE sp_Dodaj_Zlecenie
+    @id_pojazdu INT,
+    @przebieg INT,
+    @opis VARCHAR(255)
+AS
+BEGIN
+    INSERT INTO Zlecenia (
+        id_pojazdu,
+        data_przyjecia,
+        status,
+        przebieg,
+        opis
+    )
+    VALUES (
+        @id_pojazdu,
+        GETDATE(),
+        'Oczekujace',
+        @przebieg,
+        @opis
+    );
+END;
+GO
+```
+
+```sql
+CREATE PROCEDURE sp_Zakoncz_Zlecenie
+    @id_zlecenia INT
+AS
+BEGIN
+    UPDATE Zlecenia
+    SET
+        status = 'Zakonczone',
+        data_zakonczenia = GETDATE()
+    WHERE id_zlecenia = @id_zlecenia;
+END;
+GO
+```
+
 
 ## Funkcje
 
@@ -871,27 +912,63 @@ RETURN
 ## Triggery
 
 ```sql
-CREATE TRIGGER trg_Log_Uslugi
-ON Zlecenia_Uslugi
-AFTER INSERT
+CREATE TRIGGER trg_SprawdzUslugi
+ON Zlecenia
+AFTER UPDATE
 AS
 BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        WHERE i.status = 'Zakonczone'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM Zlecenia_Uslugi zu
+            WHERE zu.id_zlecenia = i.id_zlecenia
+        )
+    )
+    BEGIN
+        RAISERROR(
+            'Nie mozna zakonczyc zlecenia bez wykonanych uslug.',
+            16,
+            1
+        );
 
-    PRINT 'Dodano nowa usluge do zlecenia';
-
+        ROLLBACK TRANSACTION;
+    END
 END;
+GO
 ```
 
 ```sql
-CREATE TRIGGER trg_Log_Czesci
-ON Zlecenia_Czesci
-AFTER INSERT
+CREATE TRIGGER trg_BlokujUsuniecieKlienta
+ON Klienci
+INSTEAD OF DELETE
 AS
 BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM deleted d
+        JOIN Pojazdy p
+            ON d.id_klienta = p.id_klienta
+    )
+    BEGIN
+        RAISERROR(
+            'Nie mozna usunac klienta posiadajacego pojazdy.',
+            16,
+            1
+        );
 
-    PRINT 'Dodano nowa czesc do zlecenia';
+        RETURN;
+    END;
 
+    DELETE FROM Klienci
+    WHERE id_klienta IN (
+        SELECT id_klienta
+        FROM deleted
+    );
 END;
+GO
 ```
 
 
