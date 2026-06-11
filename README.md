@@ -743,8 +743,54 @@ BEGIN
     );
 END;
 GO
-```
 
+```
+```sql
+CREATE PROCEDURE sp_Dodaj_Usluge_Do_Zlecenia
+    @id_zlecenia INT,
+    @id_uslugi INT,
+    @ilosc INT,
+    @cena_w_momencie DECIMAL(10,2)
+AS
+BEGIN
+    INSERT INTO Zlecenia_Uslugi (
+        id_zlecenia,
+        id_uslugi,
+        ilosc,
+        cena_w_momencie
+    )
+    VALUES (
+        @id_zlecenia,
+        @id_uslugi,
+        @ilosc,
+        @cena_w_momencie
+    );
+END;
+GO
+```
+```sql
+CREATE PROCEDURE sp_Dodaj_Czesc_Do_Zlecenia
+    @id_zlecenia INT,
+    @id_czesci INT,
+    @ilosc INT,
+    @cena_w_momencie DECIMAL(10,2)
+AS
+BEGIN
+    INSERT INTO Zlecenia_Czesci (
+        id_zlecenia,
+        id_czesci,
+        ilosc,
+        cena_w_momencie
+    )
+    VALUES (
+        @id_zlecenia,
+        @id_czesci,
+        @ilosc,
+        @cena_w_momencie
+    );
+END;
+GO
+```
 ```sql
 CREATE PROCEDURE sp_Zakoncz_Zlecenie
     @id_zlecenia INT
@@ -758,6 +804,7 @@ BEGIN
 END;
 GO
 ```
+
 
 # Funkcje
 
