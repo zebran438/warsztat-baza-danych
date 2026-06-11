@@ -719,14 +719,81 @@ JOIN Zlecenia z
     ON zc.id_zlecenia = z.id_zlecenia;
 ```
 # Procedury
+```sql
+CREATE PROCEDURE sp_Dodaj_Klienta_i_Pojazd
+    @imie VARCHAR(50),
+    @nazwisko VARCHAR(50),
+    @telefon VARCHAR(15),
+
+    @id_modelu INT,
+    @nr_rejestracyjny VARCHAR(20),
+    @vin VARCHAR(50),
+    @id_klasy INT
+AS
+BEGIN
+
+    DECLARE @id_klienta INT;
+
+    INSERT INTO Klienci (
+        imie,
+        nazwisko,
+        telefon
+    )
+    VALUES (
+        @imie,
+        @nazwisko,
+        @telefon
+    );
+
+    SET @id_klienta = SCOPE_IDENTITY();
+
+    INSERT INTO Pojazdy (
+        id_klienta,
+        id_modelu,
+        nr_rejestracyjny,
+        vin,
+        id_klasy
+    )
+    VALUES (
+        @id_klienta,
+        @id_modelu,
+        @nr_rejestracyjny,
+        @vin,
+        @id_klasy
+    );
+
+    SELECT
+        @id_klienta AS id_klienta,
+        SCOPE_IDENTITY() AS id_pojazdu;
+
+END;
+GO
+```
 
 ```sql
 CREATE PROCEDURE sp_Dodaj_Zlecenie
-    @id_pojazdu INT,
+    @nr_rejestracyjny VARCHAR(20),
     @przebieg INT,
     @opis VARCHAR(255)
 AS
 BEGIN
+
+    DECLARE @id_pojazdu INT;
+
+    SELECT @id_pojazdu = id_pojazdu
+    FROM Pojazdy
+    WHERE nr_rejestracyjny = @nr_rejestracyjny;
+
+    IF @id_pojazdu IS NULL
+    BEGIN
+        RAISERROR(
+            'Nie znaleziono pojazdu o podanym numerze rejestracyjnym.',
+            16,
+            1
+        );
+        RETURN;
+    END;
+
     INSERT INTO Zlecenia (
         id_pojazdu,
         data_przyjecia,
@@ -741,9 +808,11 @@ BEGIN
         @przebieg,
         @opis
     );
+
+    SELECT SCOPE_IDENTITY() AS id_zlecenia;
+
 END;
 GO
-
 ```
 ```sql
 CREATE PROCEDURE sp_Dodaj_Usluge_Do_Zlecenia
